@@ -1,0 +1,7 @@
+{
+    "acolite": "S:/data/acolite/extract_values/acolite",
+    "stations": "stations.csv",
+    "netcdfs" : "ncfs.csv",
+    "buffer"  : 3,
+    "date_delta" : 1
+}
