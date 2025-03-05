@@ -11,25 +11,25 @@ import subprocess
 from datetime import datetime
 from tqdm import tqdm
 import sys
-# 添加 acolite_launcher.py 所在的文件夹路径
+# add the path of acolite_launcher.py
 sys.path.append('D:\\Acolite')
 from launch_acolite import launch_acolite
 from glob import glob
 #--------------------------------------------------------
-#需要修改的变量
-settings = r'H:\Satellite_processing_ERSL\settings.txt'  #一个Setting文件例子                                            
+#parameters need to be changed
+settings = r'H:\Satellite_processing_ERSL\settings.txt'  #setting file                                         
 Input_path = r'C:\Users\jmen\Box\ERSL_FieldDatabase\LakeLanier\2024October8\SatelliteImage\L1'      #input path L1 data       
 Output_path = r'C:\Users\jmen\Box\ERSL_FieldDatabase\LakeLanier\2024October8\SatelliteImage\L2_acolite' #output path        
 acolitepath = r'D:\acolite_py_win_20231023\acolite_py_win\dist\acolite\acolite.exe' #acolite.exe path
 satellite = 'landsat-8&9' #landsat-8&9 or Sentinel-2
 #--------------------------------------------------------
 
-#读出例子Setting文件的内容
+#read setting file
 with open(settings,'r') as ef:
     examplecon=ef.read().split('\n')
 
 fileList=os.listdir(Input_path)
-settingList=[]    #存放各setting文件的路径
+settingList=[]    #setting path for each image
 
 for f in fileList:
     if satellite == 'Sentinel-2':
@@ -46,16 +46,16 @@ for f in fileList:
         os.mkdir(outputDir)
     
     examplecon[1] = '## Written at ' + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    examplecon[2] = 'inputfile='+inputfile    #修改输入的文件路径
-    examplecon[3] = 'output='+outputDir       #修改输出的文件路径
-    settingFile = os.path.join(outputDir,f.split('.')[0]+'_setting.txt')  #不断生成新的setting文件的文件名
+    examplecon[2] = 'inputfile='+inputfile    #input path
+    examplecon[3] = 'output='+outputDir       #output path
+    settingFile = os.path.join(outputDir,f.split('.')[0]+'_setting.txt')  #update settings
     settingList.append(settingFile)
 
     with open(settingFile,'w') as outsetting:
         for ec in examplecon:
-            outsetting.write(ec+'\n')          #生成新的setting文件
+            outsetting.write(ec+'\n')          #write new settings
     
-for stl in tqdm(settingList):              # 循环调用setting文件，进行批处理
+for stl in tqdm(settingList):              # loop setting
     with open(stl,'r') as ef:
         stl_ = ef.read().split('\n')
     
@@ -68,6 +68,6 @@ for stl in tqdm(settingList):              # 循环调用setting文件，进行�
             '--settings=' + stl
         ]
         
-        # 运行 Acolite
+        # run Acolite
         launch_acolite()
 
