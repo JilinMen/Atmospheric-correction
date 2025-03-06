@@ -54,20 +54,32 @@ for f in fileList:
     with open(settingFile,'w') as outsetting:
         for ec in examplecon:
             outsetting.write(ec+'\n')          #write new settings
-    
-for stl in tqdm(settingList):              # loop setting
-    with open(stl,'r') as ef:
+
+from multiprocessing import Pool
+import multiprocessing
+# parallel computing
+print("CPU core number（multiprocessing）：", multiprocessing.cpu_count())
+# number of core being used（less than CPU number）
+num_processes = 4  
+
+def process_acolite(setting_file):
+    """ run Acolite for each image """
+    with open(setting_file, 'r') as ef:
         stl_ = ef.read().split('\n')
     
-    if glob(os.path.join(stl_[3].split('=')[1],'*L2W.nc')) != []:
-        print("This file has been processed, Skip")
-    else:
-        sys.argv = [
-            acolitepath,
-            '--cli',
-            '--settings=' + stl
-        ]
-        
-        # run Acolite
-        launch_acolite()
+    if glob(os.path.join(stl_[3].split('=')[1], '*L2W.nc')) != []:
+        print(f"{setting_file} proceed，skip")
+        return
 
+    sys.argv = [
+        acolitepath,
+        '--cli',
+        '--settings=' + setting_file
+    ]
+    
+    # run Acolite
+    launch_acolite()
+
+# multi line 
+with Pool(processes=num_processes) as pool:
+    list(tqdm(pool.imap_unordered(process_acolite, settingList), total=len(settingList)))
